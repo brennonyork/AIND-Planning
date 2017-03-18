@@ -202,9 +202,19 @@ class AirCargoProblem(Problem):
         conditions by ignoring the preconditions required for an action to be
         executed.
         '''
-        # TODO implement (see Russell-Norvig Ed-3 10.2.3  or Russell-Norvig Ed-2 11.2)
-        count = 0
-        return count
+        # first determine the current positive states
+        current_states = set([self.state_map[i]
+                              for i in range(len(self.state_map))
+                              if node.state[i] == 'T'])
+        # then determine your goal states
+        goals = set(self.goal)
+        
+        # finally determine if any of the current states include goal states
+        # if so, remove those goal states from the list
+        unresolved_goals = goals - current_states
+
+        # last count the number of goals that aren't met yet and return
+        return len(unresolved_goals)
 
 
 def air_cargo_p1() -> AirCargoProblem:
