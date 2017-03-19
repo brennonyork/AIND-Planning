@@ -282,8 +282,8 @@ class PlanningGraph():
             self.s_levels[level].add(PgNode_s(literal, False))
         # no mutexes at the first level
 
-        # continue to build the graph alternating A, S levels until last two S levels contain the same literals,
-        # i.e. until it is "leveled"
+        # continue to build the graph alternating A, S levels until last two S
+        # levels contain the same literals, i.e. until it is "leveled"
         while not leveled:
             self.add_action_level(level)
             self.update_a_mutex(self.a_levels[level])
@@ -305,12 +305,11 @@ class PlanningGraph():
         :return:
             adds A nodes to the current level in self.a_levels[level]
         '''
-        # TODO add action A level to the planning graph as described in the Russell-Norvig text
-        # 1. determine what actions to add and create those PgNode_a objects
         pg_nodes = set()
 
         for a in self.all_actions:
             pg_node = PgNode_a(a)
+            # 1. determine what actions to add and create those PgNode_a objects
             if pg_node.prenodes.issubset(self.s_levels[level]):
                 pg_nodes.add(pg_node)
                 # 2. connect the nodes to the previous S literal level
@@ -330,23 +329,24 @@ class PlanningGraph():
         ''' add an S (literal) level to the Planning Graph
 
         :param level: int
-            the level number alternates S0, A0, S1, A1, S2, .... etc the level number is also used as the
+            the level number alternates S0, A0, S1, A1, S2, .... etc the level
+            number is also used as the
             index for the node set lists self.a_levels[] and self.s_levels[]
         :return:
             adds S nodes to the current level in self.s_levels[level]
         '''
-        # TODO add literal S level to the planning graph as described in the Russell-Norvig text
-        # 1. determine what literals to add
         s_nodes = set()
 
+        # 1. determine what literals to add
         # go to the previous level and look at, for each action, the effect nodes
         for a_node in self.a_levels[level-1]:
             for s_node in a_node.effnodes:
+                # 2. connect the nodes
                 a_node.children.add(s_node)
                 s_node.parents.add(a_node)
                 s_nodes.add(s_node)
-        # 2. connect the nodes
         self.s_levels.insert(level, s_nodes)
+
         # for example, every A node in the previous level has a list of S nodes
         # in effnodes that represent the effect produced by the action. These
         # literals will all be part of the new S level.  Since we are working
@@ -411,10 +411,11 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         '''
-        # check if node_a1 has effects to add or remove
+        # create the sets of node_a1 effects that are added and removed
         a1_add = set(node_a1.action.effect_add)
         a1_rem = set(node_a1.action.effect_rem)
-        # check if node_a2 has effects to add or remove
+
+        # likewise for node_a2
         a2_add = set(node_a2.action.effect_add)
         a2_rem = set(node_a2.action.effect_rem)
 
@@ -444,11 +445,13 @@ class PlanningGraph():
         :param node_a2: PgNode_a
         :return: bool
         '''
+        # return sets of all effects and preconditions from node_a1
         a1_effect_add = set(node_a1.action.effect_add)
         a1_effect_rem = set(node_a1.action.effect_rem)
         a1_precond_pos = set(node_a1.action.precond_pos)
         a1_precond_neg = set(node_a1.action.precond_neg)
 
+        # same as above for node_a2
         a2_effect_add = set(node_a2.action.effect_add)
         a2_effect_rem = set(node_a2.action.effect_rem)
         a2_precond_pos = set(node_a2.action.precond_pos)
@@ -513,7 +516,6 @@ class PlanningGraph():
         :param node_s2: PgNode_s
         :return: bool
         '''
-
         if (node_s1.symbol == node_s2.symbol and
             node_s1.is_pos != node_s2.is_pos):
             return True
@@ -550,10 +552,10 @@ class PlanningGraph():
         level_sum = 0
 
         for g in self.problem.goal:
-            g_found = False
+            g_found = False  # create bool to track if we found a goal or not
             # forward search through the s levels until a goal state is found
             for idx in range(len(self.s_levels)):
-                if g_found:
+                if g_found:  # if goal state is found, break from the loop
                     break
                 else:
                     for s_level in self.s_levels[idx]:
